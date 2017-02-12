@@ -10,6 +10,7 @@
 #![feature(core_intrinsics)]
 #![feature(custom_attribute)]
 #![feature(dropck_parametricity)]
+#![feature(float_extras)]
 #![feature(fused)]
 #![feature(heap_api)]
 #![feature(int_error_internals)]
