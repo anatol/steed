@@ -943,8 +943,8 @@ impl f32 {
          mem::transmute(0x33a22168)]
     };
 
-    let sx = x.sign();
-    let ix = x.abs().repr() as i32;
+    let sx = x.is_sign_positive();
+    let ix: i32 = mem::transmute(x.abs());
 
     if ix >= 0x4c800000 {
         if ix > 0x7f800000 {
@@ -952,7 +952,7 @@ impl f32 {
             return x + x;
         }
 
-        if sx == Sign::Positive {
+        if sx {
             atanhi[3] + atanlo[3]
         } else {
             -atanhi[3] - atanlo[3]
@@ -969,7 +969,7 @@ impl f32 {
 
             id = -1;
         } else {
-            x = fabsf(x);
+            x = x.abs();
 
             // |x| < 19/16
             if ix < 0x3f980000 {
@@ -1005,7 +1005,7 @@ impl f32 {
             let id = id as usize;
             let z = atanhi[id] - ((x * (s1 + s2) - atanlo[id]) - x);
 
-            if let Sign::Negative = sx { -z } else { z }
+            if sx { -z } else { z }
         }
     }
     }
@@ -1053,8 +1053,8 @@ impl f32 {
     let x = self;
     let y = other;
 
-    let hx = x.repr() as i32;
-    let hy = y.repr() as i32;
+    let hx: i32 = mem::transmute(x);
+    let hy: i32 = mem::transmute(y);
     let ix = hx & 0x7fffffff;
     let iy = hy & 0x7fffffff;
 
@@ -1063,7 +1063,7 @@ impl f32 {
         x + y
     } else if hx == 0x3f800000 {
         // x = 1
-        atanf(y)
+        y.atan()
     } else {
         // 2 * sign(x) + sign(y)
         let mut m = ((hy >> 31) & 1) | ((hx >> 30) & 2);
@@ -1130,7 +1130,7 @@ impl f32 {
                 0.
             } else {
                 // safe to do
-                atanf(fabsf(y / x))
+                (y / x).abs().atan()
             };
 
             match m {
