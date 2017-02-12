@@ -138,6 +138,10 @@ pub use core_collections::vec;
 pub use std_unicode::char;
 
 // Rust 1.15.0
+pub mod f32;
+pub mod f64;
+
+// Rust 1.15.0
 #[macro_use]
 mod macros;
 
