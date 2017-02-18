@@ -1,6 +1,7 @@
 #![feature(alloc)]
 #![feature(allow_internal_unstable)]
 #![feature(asm)]
+#![feature(box_syntax)]
 #![feature(cfg_target_vendor)]
 #![feature(collections)]
 #![feature(collections_bound)]
@@ -10,6 +11,7 @@
 #![feature(core_intrinsics)]
 #![feature(custom_attribute)]
 #![feature(dropck_parametricity)]
+#![feature(fnbox)]
 #![feature(fused)]
 #![feature(heap_api)]
 #![feature(int_error_internals)]
@@ -167,6 +169,8 @@ pub mod os;
 pub mod path;
 // Rust 1.15.0
 pub mod process;
+// Rust 1.15.0
+pub mod thread;
 // Rust 1.15.0
 pub mod time;
 
