@@ -198,6 +198,11 @@ pub extern "C" fn start(sp: &'static Stack) -> ! {
         fn main(argc: isize, argv: *const *const u8) -> isize;
     }
 
+    unsafe {
+        let mut buffer = ::mem::uninitialized();
+        ::libc::internal::init_main_thread(&mut buffer);
+    }
+
     unsafe { ::linux::exit_group(main(sp.argc(), sp.argv()) as i32) }
 }
 
