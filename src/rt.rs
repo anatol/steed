@@ -207,6 +207,7 @@ pub extern "C" fn start(sp: &'static Stack) -> ! {
     }
 
     unsafe {
+        ::sys::args::init(sp.argc(), sp.argv());
         let mut buffer = ::mem::uninitialized();
         ::libc::internal::init_main_thread(&mut buffer);
     }

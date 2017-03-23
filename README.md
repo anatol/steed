@@ -76,7 +76,7 @@ fn main() {
 ```
 
 ```
-# xargo build --target x86_64-unknown-linux-steed --release --example hello
+# RUST_TARGET_PATH=`pwd`/docker xargo build --target x86_64-unknown-linux-steed --release --example hello
 $ ./hello
 Hello, world!
 

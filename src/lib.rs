@@ -12,6 +12,7 @@
 #![feature(custom_attribute)]
 #![feature(dropck_parametricity)]
 #![feature(fnbox)]
+#![feature(exact_size_is_empty)]
 #![feature(fused)]
 #![feature(heap_api)]
 #![feature(int_error_internals)]
@@ -154,6 +155,8 @@ pub mod sync;
 pub mod ascii;
 // Rust 1.15.0
 pub mod collections;
+// Rust 1.15.0
+pub mod env;
 // Rust 1.15.0
 pub mod error;
 // Rust 1.15.0
