@@ -1,0 +1,7 @@
+[package]
+name = "naive_ralloc"
+version = "0.1.0"
+authors = ["author"]
+
+[dependencies]
+sc = "0.1.5"
