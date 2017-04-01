@@ -219,11 +219,6 @@
 // Tell the compiler to link to either panic_abort or panic_unwind
 #![needs_panic_runtime]
 
-// Always use alloc_system during stage0 since we don't know if the alloc_*
-// crate the stage0 compiler will pick by default is available (most
-// obviously, if the user has disabled jemalloc in `./configure`).
-#![cfg_attr(any(stage0, feature = "force_alloc_system"), feature(alloc_system))]
-
 // Turn warnings into errors, but only after stage0, where it can be useful for
 // code to emit warnings during language transitions
 #![deny(warnings)]
@@ -336,10 +331,13 @@ extern crate std_unicode;
 extern crate libc;
 
 // We always need an unwinder currently for backtraces
-extern crate unwind;
-
-#[cfg(any(stage0, feature = "force_alloc_system"))]
-extern crate alloc_system;
+//extern crate unwind;
+#[cfg(not(test))]
+#[cfg(feature = "ralloc")]
+extern crate ralloc;
+#[cfg(not(test))]
+#[cfg(feature = "naive_ralloc")]
+extern crate naive_ralloc;
 
 // compiler-rt intrinsics
 extern crate compiler_builtins;

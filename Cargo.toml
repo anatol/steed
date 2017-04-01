@@ -8,6 +8,11 @@ version = "0.1.0"
 [dependencies]
 sc = "0.2"
 
+[dependencies.libc]
+version = "0.2"
+default-features = false
+path = "libc"
+
 [dependencies.ralloc]
 default-features = false
 features = ["allocator"]
@@ -18,6 +23,9 @@ optional = true
 optional = true
 path = "naive_ralloc"
 
+[dependencies.panic_abort]
+path = "panic_abort"
+
 [dependencies.compiler_builtins]
 default-features = false
 features = ["mem"]
@@ -26,6 +34,9 @@ git = "https://github.com/rust-lang-nursery/compiler-builtins"
 [features]
 default = ["compiler-builtins", "ralloc"]
 compiler-builtins = ["compiler_builtins/compiler-builtins"]
+
+#[profile.dev]
+#panic = "abort"
 
 [profile.release]
 lto = true
