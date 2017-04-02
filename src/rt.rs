@@ -27,6 +27,195 @@
 // Reexport some of our utilities which are expected by other crates.
 pub use panicking::{begin_panic, begin_panic_fmt, update_panic_count};
 
+use core::intrinsics;
+
+// The bottom of the program's stack
+//
+// Most (all?) architectures grow their stack towards smaller address so the
+// bottom of the stack actually has the largest, valid memory address.
+#[repr(C)]
+#[derive(Debug)]
+pub struct Stack {
+    argc: isize,
+    // NOTE Null terminated string
+    argv0: &'static u8,
+}
+
+impl Stack {
+    fn argc(&self) -> isize {
+        self.argc
+    }
+
+    fn argv(&self) -> *const *const u8 {
+        &self.argv0 as *const &'static u8 as *const *const u8
+    }
+}
+
+// This is the entry point of all programs or, IOW, this is where all programs
+// begin their execution.
+//
+// At this point we can get a pointer to the bottom of the stack. The ELF loader
+// has set up useful information in there, like program arguments and
+// environment variables, so it's important to retrieve that value. The value
+// will be stored in an architecture specific register.
+//
+// We can't do much at this state because the stack is set up in a way that's
+// incompatible with most operations so we have no choice but to call another
+// function.
+//
+// So this what we'll do, expressed in Rust code:
+//
+// ``` rust
+// start($BSP)
+// ```
+//
+// Call some `start` function whose argument is the pointer to the bottom of the
+// stack (`$BSP`).
+//
+// Most Rust operations, like using a local/stack variable, will modify the
+// register where `$BSP` resides so we have to use assembly to avoid that.
+
+#[cfg(not(test))]
+#[cfg(target_arch = "x86_64")]
+#[export_name = "_start"]
+#[naked]
+pub extern "C" fn entry() -> ! {
+    unsafe {
+        asm!("mov %rsp, %rdi
+              call _start_rust"
+             :
+             :
+             :
+             : "volatile");
+        intrinsics::unreachable()
+    }
+}
+
+#[cfg(not(test))]
+#[cfg(target_arch = "x86")]
+#[export_name = "_start"]
+#[naked]
+pub extern "C" fn entry() -> ! {
+    unsafe {
+        asm!("mov %esp, %eax
+              push %eax
+              push %eax
+              call 1f
+              1: push %eax
+              call _start_rust"
+             :
+             :
+             :
+             : "volatile");
+        intrinsics::unreachable()
+    }
+}
+
+#[cfg(not(test))]
+#[cfg(target_arch = "arm")]
+#[export_name = "_start"]
+#[naked]
+pub extern "C" fn entry() -> ! {
+    unsafe {
+        asm!("mov r0, sp
+              b _start_rust"
+             :
+             :
+             :
+             : "volatile");
+        intrinsics::unreachable()
+    }
+}
+
+#[cfg(not(test))]
+#[cfg(target_arch = "aarch64")]
+#[export_name = "_start"]
+#[naked]
+pub extern "C" fn entry() -> ! {
+    unsafe {
+        asm!("mov x0, sp
+              b _start_rust"
+             :
+             :
+             :
+             : "volatile");
+        intrinsics::unreachable()
+    }
+}
+
+#[cfg(not(test))]
+#[cfg(target_arch = "mips")]
+#[export_name = "__start"]
+#[naked]
+pub extern "C" fn entry() -> ! {
+    unsafe {
+        asm!("move $$4, $$sp
+              jal _start_rust"
+             :
+             :
+             :
+             : "volatile");
+        intrinsics::unreachable()
+    }
+}
+
+// FIXME
+#[cfg(not(test))]
+#[cfg(target_arch = "mips64")]
+#[export_name = "__start"]
+#[naked]
+pub extern "C" fn entry() -> ! {
+    unsafe {
+        asm!("move $$4, $$sp
+              jal _start_rust"
+             :
+             :
+             :
+             : "volatile");
+        intrinsics::unreachable()
+    }
+}
+
+#[cfg(not(test))]
+#[cfg(any(target_arch = "powerpc", target_arch = "powerpc64"))]
+#[export_name = "_start"]
+#[naked]
+pub extern "C" fn entry() -> ! {
+    unsafe {
+        asm!("mr 3, 1
+              b _start_rust"
+             :
+             :
+             :
+             : "volatile");
+        intrinsics::unreachable()
+    }
+}
+
+// Now we have left behind the entry point and we can now perform pretty much
+// any operation without worries. We also have a pointer to the bottom of the
+// stack from which we can retrieve the program arguments and other things.
+//
+// Eventually we'll have to call the `main` function which, as you may have
+// guess, is related to the `fn main() { .. }` function one writes in their
+// crates. But the relationship is not that simple due to the presence of the
+// `start` lang item. The next section explains how that lang item works.
+#[cfg(not(test))]
+#[inline(never)]
+#[export_name = "_start_rust"]
+pub extern "C" fn start(sp: &'static Stack) -> ! {
+    // TOTHINK, can we call this function as _start?
+    extern "C" {
+        fn main(argc: isize, argv: *const *const u8) -> isize;
+    }
+
+    //unsafe { ::linux::exit_group(main(sp.argc(), sp.argv()) as i32) }
+    init_libc;
+    libc_start_init;
+    let res = main(sp.argc(), sp.argv());
+    exit(res)
+}
+
 #[cfg(not(test))]
 #[lang = "start"]
 fn lang_start(main: *const u8, argc: isize, argv: *const *const u8) -> isize {
@@ -59,9 +248,5 @@ fn lang_start(main: *const u8, argc: isize, argv: *const *const u8) -> isize {
         res.is_err()
     };
 
-    if failed {
-        101
-    } else {
-        0
-    }
+    if failed { 101 } else { 0 }
 }
