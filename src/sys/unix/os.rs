@@ -36,29 +36,11 @@ use vec;
 static ENV_LOCK: Mutex = Mutex::new();
 
 
-extern "C" {
-    #[cfg(not(target_os = "dragonfly"))]
-    #[cfg_attr(any(target_os = "linux", target_os = "emscripten", target_os = "fuchsia"),
-               link_name = "__errno_location")]
-    #[cfg_attr(any(target_os = "bitrig",
-                   target_os = "netbsd",
-                   target_os = "openbsd",
-                   target_os = "android",
-                   target_env = "newlib"),
-               link_name = "__errno")]
-    #[cfg_attr(target_os = "solaris", link_name = "___errno")]
-    #[cfg_attr(any(target_os = "macos",
-                   target_os = "ios",
-                   target_os = "freebsd"),
-               link_name = "__error")]
-    #[cfg_attr(target_os = "haiku", link_name = "_errnop")]
-    fn errno_location() -> *mut c_int;
-}
-
 /// Returns the platform-specific value of errno
 #[cfg(not(target_os = "dragonfly"))]
 pub fn errno() -> i32 {
-    unsafe { (*errno_location()) as i32 }
+    // Do not use errno. Remove this function and use exit code directly from the syscall
+    0
 }
 
 /// Sets the platform-specific value of errno
