@@ -28,8 +28,7 @@
 pub use panicking::{begin_panic, begin_panic_fmt, update_panic_count};
 
 use core::intrinsics;
-
-extern crate libc_shim;
+use libc_shim;
 
 // The bottom of the program's stack
 //

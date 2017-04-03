@@ -50,7 +50,7 @@ mod imp {
     use libc::{sigaction, SIGBUS, SIG_DFL,
                SA_SIGINFO, SA_ONSTACK, sighandler_t};
     use libc;
-    use libc::{mmap, munmap};
+    use libc_shim::{mmap, munmap};
     use libc::{SIGSEGV, PROT_READ, PROT_WRITE, MAP_PRIVATE, MAP_ANON};
     use libc::MAP_FAILED;
 

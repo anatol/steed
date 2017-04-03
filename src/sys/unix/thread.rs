@@ -212,7 +212,7 @@ pub mod guard {
 #[cfg_attr(test, allow(dead_code))]
 pub mod guard {
     use libc;
-    use libc::mmap;
+    use libc_shim::mmap;
     use libc::{PROT_NONE, MAP_PRIVATE, MAP_ANON, MAP_FAILED, MAP_FIXED};
     use sys::os;
 

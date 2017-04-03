@@ -10,10 +10,9 @@
 
 #![allow(missing_docs, bad_style)]
 
-extern crate libc_shim;
-
 use io::{self, ErrorKind};
 use libc;
+use libc_shim;
 
 #[cfg(target_os = "android")]   pub use os::android as platform;
 #[cfg(target_os = "bitrig")]    pub use os::bitrig as platform;
