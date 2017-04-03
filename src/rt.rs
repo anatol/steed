@@ -204,16 +204,20 @@ pub extern "C" fn entry() -> ! {
 #[inline(never)]
 #[export_name = "_start_rust"]
 pub extern "C" fn start(sp: &'static Stack) -> ! {
-    // TOTHINK, can we call this function as _start?
+    // TOTHINK, can we use this function as _start?
     extern "C" {
         fn main(argc: isize, argv: *const *const u8) -> isize;
     }
-
     //unsafe { ::linux::exit_group(main(sp.argc(), sp.argv()) as i32) }
-    init_libc;
-    libc_start_init;
-    let res = main(sp.argc(), sp.argv());
-    exit(res)
+
+    // read argc, argv, envvars, ELF aux from stack
+    // use Elf_AUX[AT_RANDOM] for stack smashing protection
+    // check if fd=0,1,2 are open and valid file descriptors, if not open /dev/null for them
+
+    let ret = main(sp.argc(), sp.argv());
+
+    // on exit run exit functions, run fini functions
+    ::sys::os::exit_group(ret)
 }
 
 #[cfg(not(test))]
