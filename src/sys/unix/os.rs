@@ -14,6 +14,7 @@
 
 use os::unix::prelude::*;
 
+use core::intrinsics;
 use error::Error as StdError;
 use ffi::{CString, CStr, OsString, OsStr};
 use fmt;
@@ -557,8 +558,9 @@ pub fn exit(code: i32) -> ! {
 }
 
 #[inline(always)]
-pub unsafe fn exit_group(code: c_int) -> ! {
-    syscall!(EXIT_GROUP, code);
-
-    intrinsics::unreachable()
+pub fn exit_group(code: c_int) -> ! {
+    unsafe {
+        syscall!(EXIT_GROUP, code);
+        intrinsics::unreachable()
+    }
 }

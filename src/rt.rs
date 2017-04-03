@@ -214,10 +214,10 @@ pub extern "C" fn start(sp: &'static Stack) -> ! {
     // use Elf_AUX[AT_RANDOM] for stack smashing protection
     // check if fd=0,1,2 are open and valid file descriptors, if not open /dev/null for them
 
-    let ret = main(sp.argc(), sp.argv());
+    let ret = unsafe { main(sp.argc(), sp.argv()) };
 
     // on exit run exit functions, run fini functions
-    ::sys::os::exit_group(ret)
+    ::sys::os::exit_group(ret as i32)
 }
 
 #[cfg(not(test))]
