@@ -56,8 +56,7 @@ pub unsafe extern fn __rust_start_panic(_data: usize, _vtable: usize) -> u32 {
 
     #[cfg(unix)]
     unsafe fn abort() -> ! {
-        extern crate libc;
-        libc::abort();
+        ::sys::os::abort();
     }
 
     #[cfg(any(target_os = "redox", windows))]

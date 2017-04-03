@@ -664,3 +664,13 @@ pub fn exit_group(code: c_int) -> ! {
         intrinsics::unreachable()
     }
 }
+
+pub fn abort() -> ! {
+    unsafe {
+        let tid = syscall(GETTID);
+        syscall!(TKILL, tid, SIGABRT);
+        asm!("hlt");
+        syscall!(TKILL, tid, SIGKILL);
+    }
+    exit_group(127)
+}

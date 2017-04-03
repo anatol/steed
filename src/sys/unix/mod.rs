@@ -172,5 +172,5 @@ pub fn cvt_r<T, F>(mut f: F) -> io::Result<T>
 // instruction" that intrinsics::abort would cause, as intrinsics::abort is
 // implemented as an illegal instruction.
 pub unsafe fn abort_internal() -> ! {
-    ::libc::abort()
+    ::sys::os::abort()
 }
