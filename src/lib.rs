@@ -331,9 +331,6 @@ extern crate alloc;
 extern crate std_unicode;
 extern crate libc;
 
-#[macro_use]
-extern crate sc;
-
 // We always need an unwinder currently for backtraces
 //extern crate unwind;
 #[cfg(not(test))]

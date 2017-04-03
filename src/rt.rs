@@ -29,6 +29,8 @@ pub use panicking::{begin_panic, begin_panic_fmt, update_panic_count};
 
 use core::intrinsics;
 
+extern crate libc_shim;
+
 // The bottom of the program's stack
 //
 // Most (all?) architectures grow their stack towards smaller address so the
@@ -217,7 +219,7 @@ pub extern "C" fn start(sp: &'static Stack) -> ! {
     let ret = unsafe { main(sp.argc(), sp.argv()) };
 
     // on exit run exit functions, run fini functions
-    ::sys::os::exit_group(ret as i32)
+    libc_shim::exit_group(ret as i32)
 }
 
 #[cfg(not(test))]

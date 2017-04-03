@@ -13,6 +13,9 @@ version = "0.2"
 default-features = false
 path = "libc"
 
+[dependencies.libc_shim]
+path = "libc_shim"
+
 [dependencies.ralloc]
 default-features = false
 features = ["allocator"]

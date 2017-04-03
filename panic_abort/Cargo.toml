@@ -12,3 +12,6 @@ doc = false
 [dependencies.libc]
 version = "0.2"
 default-features = false
+
+[dependencies.libc_shim]
+path = "../libc_shim"

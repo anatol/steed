@@ -32,19 +32,24 @@ fn allocate(size: usize) -> *mut u8 {
 
 #[linkage = "external"]
 #[no_mangle]
-pub extern fn __rust_allocate(size: usize, _align: usize) -> *mut u8 {
+pub extern "C" fn __rust_allocate(size: usize, _align: usize) -> *mut u8 {
     allocate(size)
 }
 
 #[linkage = "external"]
 #[no_mangle]
-pub extern fn __rust_deallocate(_ptr: *mut u8, _old_size: usize, _align: usize) {
+pub extern "C" fn __rust_deallocate(_ptr: *mut u8,
+                                    _old_size: usize,
+                                    _align: usize) {
 }
 
 #[linkage = "external"]
 #[no_mangle]
-pub extern fn __rust_reallocate(ptr: *mut u8, old_size: usize, size: usize,
-                                _align: usize) -> *mut u8 {
+pub extern "C" fn __rust_reallocate(ptr: *mut u8,
+                                    old_size: usize,
+                                    size: usize,
+                                    _align: usize)
+                                    -> *mut u8 {
     if size <= old_size {
         return ptr;
     }
@@ -63,13 +68,16 @@ pub extern fn __rust_reallocate(ptr: *mut u8, old_size: usize, size: usize,
 
 #[linkage = "external"]
 #[no_mangle]
-pub extern fn __rust_reallocate_inplace(_ptr: *mut u8, old_size: usize,
-                                        _size: usize, _align: usize) -> usize {
+pub extern "C" fn __rust_reallocate_inplace(_ptr: *mut u8,
+                                            old_size: usize,
+                                            _size: usize,
+                                            _align: usize)
+                                            -> usize {
     old_size // this api is not supported by naive_ralloc
 }
 
 #[linkage = "external"]
 #[no_mangle]
-pub extern fn __rust_usable_size(size: usize, _align: usize) -> usize {
+pub extern "C" fn __rust_usable_size(size: usize, _align: usize) -> usize {
     size
 }
