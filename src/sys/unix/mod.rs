@@ -69,9 +69,7 @@ pub fn init() {
     //
     // Hence, we set SIGPIPE to ignore when the program starts up in order
     // to prevent this problem.
-    unsafe {
-        reset_sigpipe();
-    }
+    reset_sigpipe();
 
     oom::set_oom_handler(oom_handler);
 
@@ -83,20 +81,20 @@ pub fn init() {
     fn oom_handler() -> ! {
         use intrinsics;
         let msg = "fatal runtime error: out of memory\n";
-        unsafe {
-            libc_shim::write(libc::STDERR_FILENO,
+        libc_shim::write(libc::STDERR_FILENO,
                         msg.as_ptr() as *const libc::c_void,
                         msg.len());
+        unsafe {
             intrinsics::abort();
         }
     }
 
     #[cfg(not(any(target_os = "nacl", target_os = "emscripten", target_os="fuchsia")))]
-    unsafe fn reset_sigpipe() {
-        assert!(signal(libc::SIGPIPE, libc::SIG_IGN) != !0);
+    fn reset_sigpipe() {
+        assert!(libc_shim::signal(libc::SIGPIPE, libc::SIG_IGN) != libc::SIG_ERR);
     }
     #[cfg(any(target_os = "nacl", target_os = "emscripten", target_os="fuchsia"))]
-    unsafe fn reset_sigpipe() {}
+    fn reset_sigpipe() {}
 }
 
 #[cfg(target_os = "android")]

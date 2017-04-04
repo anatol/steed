@@ -1,12 +1,18 @@
 #![no_std]
 #![feature(core_intrinsics)]
+#![feature(collections)]
 #![feature(asm)]
 
 extern crate libc;
 #[macro_use]
 extern crate sc;
 
+extern crate collections;
+
 use core::intrinsics;
+use core::ptr;
+use core::mem;
+use collections::slice;
 
 pub fn exit_group(code: libc::c_int) -> ! {
     unsafe {
@@ -73,4 +79,53 @@ pub fn strlen(s: *const libc::c_char) -> libc::size_t {
         }
         intrinsics::unreachable();
     }
+}
+
+pub unsafe fn sigaddset(set: *mut libc::sigset_t,
+                        signum: libc::c_int)
+                        -> libc::c_int {
+    let raw = slice::from_raw_parts_mut(set as *mut u8,
+                                        mem::size_of::<libc::sigset_t>());
+    let bit = (signum - 1) as usize;
+    raw[bit / 8] |= 1 << (bit % 8);
+    return 0;
+}
+
+pub fn sigaction(sig: libc::c_int,
+                 sa: *const libc::sigaction,
+                 old: *mut libc::sigaction)
+                 -> libc::c_int {
+    // check that signal number below _NSIG. _NSIG is 64
+    // except mips where it is defined as 128
+
+    unsafe {
+        let mask_size = mem::size_of_val(&(*sa).sa_mask);
+        // TOTHINK: we want to convert to signed type to check wether it is negative
+        // make sure that syscall returning type is correct one
+        // or maybe we should compare return value, errors are in [MAX-4096 .. MAX] range
+        let ret = syscall!(RT_SIGACTION, sig, sa, old, mask_size) as
+                  libc::c_int;
+        if ret < 0 {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+pub fn signal(sig: libc::c_int,
+              handler: libc::sighandler_t)
+              -> libc::sighandler_t {
+    let mut sa_old: libc::sigaction = unsafe { mem::uninitialized() };
+    // TODO: maybe instead of using zeroed here we should introduce a function similar to libc::sigemptyset?
+    let set: libc::sigset_t = unsafe { mem::zeroed() };
+    let sa = libc::sigaction {
+        sa_sigaction: handler,
+        sa_flags: libc::SA_RESTART,
+        sa_mask: set,
+        _restorer: ptr::null_mut(),
+    };
+    if sigaction(sig, &sa, &mut sa_old) < 0 {
+        return libc::SIG_ERR;
+    }
+    return sa_old.sa_sigaction;
 }
