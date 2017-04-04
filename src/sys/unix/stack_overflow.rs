@@ -46,7 +46,8 @@ mod imp {
     use super::Handler;
     use mem;
     use ptr;
-    use libc::{sigaltstack, SIGSTKSZ, SS_DISABLE};
+    use libc_shim::sigaltstack;
+    use libc::{SIGSTKSZ, SS_DISABLE};
     use libc::{sigaction, SIGBUS, SIG_DFL,
                SA_SIGINFO, SA_ONSTACK, sighandler_t};
     use libc;

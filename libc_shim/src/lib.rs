@@ -129,3 +129,20 @@ pub fn signal(sig: libc::c_int,
     }
     return sa_old.sa_sigaction;
 }
+
+pub fn sigaltstack(ss: *const libc::stack_t,
+                   old: *mut libc::stack_t)
+                   -> libc::c_int {
+    if !ss.is_null() {
+        let ss_size = unsafe { (*ss).ss_size };
+        if ss_size < libc::MINSIGSTKSZ {
+            // libc sets errno here, but we want to get rid of errno so return code itself
+            return -libc::ENOMEM;
+        }
+        let ss_flags = unsafe { (*ss).ss_flags };
+        if ss_flags & !libc::SS_DISABLE != 0 {
+            return -libc::EINVAL;
+        }
+    }
+    unsafe { syscall!(SIGALTSTACK, ss, old) as libc::c_int }
+}
