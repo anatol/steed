@@ -21,6 +21,7 @@ use fmt;
 use io;
 use iter;
 use libc::{self, c_int, c_char, c_void};
+use libc_shim;
 use marker::PhantomData;
 use mem;
 use memchr;
@@ -601,7 +602,7 @@ pub fn unsetenv(n: &OsStr) -> io::Result<()> {
 }
 
 pub fn page_size() -> usize {
-    unsafe { libc::sysconf(libc::_SC_PAGESIZE) as usize }
+    libc_shim::page_size()
 }
 
 pub fn temp_dir() -> PathBuf {
@@ -631,10 +632,7 @@ pub fn home_dir() -> Option<PathBuf> {
                   target_os = "nacl",
                   target_os = "emscripten")))]
     unsafe fn fallback() -> Option<OsString> {
-        let amt = match libc::sysconf(libc::_SC_GETPW_R_SIZE_MAX) {
-            n if n < 0 => 512 as usize,
-            n => n as usize,
-        };
+        let amt = 512;
         let mut buf = Vec::with_capacity(amt);
         let mut passwd: libc::passwd = mem::zeroed();
         let mut result = ptr::null_mut();

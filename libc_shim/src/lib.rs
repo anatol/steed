@@ -146,3 +146,9 @@ pub fn sigaltstack(ss: *const libc::stack_t,
     }
     unsafe { syscall!(SIGALTSTACK, ss, old) as libc::c_int }
 }
+
+pub fn page_size() -> usize {
+    // hardcoding it to 4096, but we should use libc::PAGE_SIZE
+    // but some platforms (MIPS) might have multiple values for PAGE_SIZE
+    4096
+}
