@@ -32,8 +32,8 @@ pub fn mmap(addr: *mut libc::c_void,
             fd: libc::c_int,
             offset: libc::off_t)
             -> *mut libc::c_void {
-
-    /*if (off & OFF_MASK) {
+    /*
+    if (off & OFF_MASK) {
         errno = EINVAL;
         return MAP_FAILED;
     }
@@ -60,4 +60,17 @@ pub fn write(fd: libc::c_int,
              count: libc::size_t)
              -> libc::ssize_t {
     unsafe { syscall!(WRITE, fd, buf, count) as libc::ssize_t }
+}
+
+pub fn strlen(s: *const libc::c_char) -> libc::size_t {
+    // TODO: convert to checking word-size chunks
+    // TODO: even better use arch-specific asm
+    unsafe {
+        for i in 0.. {
+            if *s.offset(i) == 0 {
+                return i as libc::size_t;
+            }
+        }
+        intrinsics::unreachable();
+    }
 }

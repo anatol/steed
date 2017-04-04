@@ -226,7 +226,7 @@ impl Iterator for ReadDir {
                 }
 
                 let name = (*entry_ptr).d_name.as_ptr();
-                let namelen = libc::strlen(name) as usize;
+                let namelen = libc_shim::strlen(name) as usize;
 
                 let ret = DirEntry {
                     entry: *entry_ptr,

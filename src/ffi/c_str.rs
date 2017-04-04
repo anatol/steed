@@ -14,7 +14,7 @@ use cmp::Ordering;
 use error::Error;
 use fmt::{self, Write};
 use io;
-use libc;
+use libc_shim;
 use mem;
 use memchr;
 use ops;
@@ -259,7 +259,7 @@ impl CString {
     /// to undefined behavior or allocator corruption.
     #[stable(feature = "cstr_memory", since = "1.4.0")]
     pub unsafe fn from_raw(ptr: *mut c_char) -> CString {
-        let len = libc::strlen(ptr) + 1; // Including the NUL byte
+        let len = libc_shim::strlen(ptr) + 1; // Including the NUL byte
         let slice = slice::from_raw_parts(ptr, len as usize);
         CString { inner: mem::transmute(slice) }
     }
@@ -582,7 +582,7 @@ impl CStr {
     /// ```
     #[stable(feature = "rust1", since = "1.0.0")]
     pub unsafe fn from_ptr<'a>(ptr: *const c_char) -> &'a CStr {
-        let len = libc::strlen(ptr);
+        let len = libc_shim::strlen(ptr);
         mem::transmute(slice::from_raw_parts(ptr, len as usize + 1))
     }
 
