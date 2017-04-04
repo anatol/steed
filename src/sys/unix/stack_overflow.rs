@@ -50,6 +50,7 @@ mod imp {
     use libc::{sigaction, SIGBUS, SIG_DFL,
                SA_SIGINFO, SA_ONSTACK, sighandler_t};
     use libc;
+    use libc_shim;
     use libc_shim::{mmap, munmap};
     use libc::{SIGSEGV, PROT_READ, PROT_WRITE, MAP_PRIVATE, MAP_ANON};
     use libc::MAP_FAILED;
@@ -114,7 +115,7 @@ mod imp {
             // Unregister ourselves by reverting back to the default behavior.
             let mut action: sigaction = mem::zeroed();
             action.sa_sigaction = SIG_DFL;
-            sigaction(signum, &action, ptr::null_mut());
+            libc_shim::sigaction(signum, &action, ptr::null_mut());
 
             // See comment above for why this function returns.
         }
@@ -128,8 +129,8 @@ mod imp {
         let mut action: sigaction = mem::zeroed();
         action.sa_flags = SA_SIGINFO | SA_ONSTACK;
         action.sa_sigaction = signal_handler as sighandler_t;
-        sigaction(SIGSEGV, &action, ptr::null_mut());
-        sigaction(SIGBUS, &action, ptr::null_mut());
+        libc_shim::sigaction(SIGSEGV, &action, ptr::null_mut());
+        libc_shim::sigaction(SIGBUS, &action, ptr::null_mut());
 
         let handler = make_handler();
         MAIN_ALTSTACK = handler._data;
