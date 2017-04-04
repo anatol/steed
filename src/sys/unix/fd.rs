@@ -13,6 +13,7 @@
 use cmp;
 use io::{self, Read};
 use libc::{self, c_int, c_void, ssize_t};
+use libc_shim;
 use mem;
 use sync::atomic::{AtomicBool, Ordering};
 use sys::cvt;
@@ -93,11 +94,11 @@ impl FileDesc {
     }
 
     pub fn write(&self, buf: &[u8]) -> io::Result<usize> {
-        let ret = cvt(unsafe {
-            libc::write(self.fd,
+        let ret = cvt(
+            libc_shim::write(self.fd,
                         buf.as_ptr() as *const c_void,
                         cmp::min(buf.len(), max_len()))
-        })?;
+        )?;
         Ok(ret as usize)
     }
 

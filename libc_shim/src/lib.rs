@@ -33,7 +33,7 @@ pub fn mmap(addr: *mut libc::c_void,
             offset: libc::off_t)
             -> *mut libc::c_void {
 
-    /*    if (off & OFF_MASK) {
+    /*if (off & OFF_MASK) {
         errno = EINVAL;
         return MAP_FAILED;
     }
@@ -51,7 +51,13 @@ pub fn mmap(addr: *mut libc::c_void,
     }
 }
 
-
 pub fn munmap(addr: *mut libc::c_void, len: libc::size_t) -> libc::c_int {
     unsafe { syscall!(MUNMAP, addr, len) as libc::c_int }
+}
+
+pub fn write(fd: libc::c_int,
+             buf: *const libc::c_void,
+             count: libc::size_t)
+             -> libc::ssize_t {
+    unsafe { syscall!(WRITE, fd, buf, count) as libc::ssize_t }
 }

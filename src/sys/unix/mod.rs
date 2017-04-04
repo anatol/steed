@@ -84,7 +84,7 @@ pub fn init() {
         use intrinsics;
         let msg = "fatal runtime error: out of memory\n";
         unsafe {
-            libc::write(libc::STDERR_FILENO,
+            libc_shim::write(libc::STDERR_FILENO,
                         msg.as_ptr() as *const libc::c_void,
                         msg.len());
             intrinsics::abort();
