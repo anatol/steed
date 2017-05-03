@@ -19,7 +19,7 @@ optional = true
 path = "naive_ralloc"
 
 [features]
-default = ["ralloc"]
+default = ["naive_ralloc"]
 
 [profile.release]
 lto = true
