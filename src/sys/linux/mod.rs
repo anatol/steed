@@ -22,6 +22,8 @@ pub mod pipe;
 pub mod process;
 pub mod os;
 pub mod rand;
+// Rust 1.17.0
+pub mod rwlock;
 pub mod stack_overflow;
 pub mod time;
 // Rust 1.15.0
