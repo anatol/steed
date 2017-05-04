@@ -10,6 +10,8 @@ pub mod fd;
 // Rust 1.16.0 (own implementation of readdir and canonicalize)
 pub mod fs;
 pub mod memchr;
+// Rust 1.17.0
+pub mod mutex;
 // Rust 1.16.0 (without error support for `lookup_host`, minor changes)
 pub mod net;
 // Rust 1.16.0
