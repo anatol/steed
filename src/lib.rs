@@ -22,6 +22,7 @@
 #![feature(macro_reexport)]
 #![feature(naked_functions)]
 #![feature(oom)]
+#![feature(optin_builtin_traits)]
 #![feature(prelude_import)]
 #![feature(rand)]
 #![feature(raw)]

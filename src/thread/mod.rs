@@ -81,6 +81,13 @@ impl Builder {
     }
 }
 
+#[inline]
+#[stable(feature = "rust1", since = "1.0.0")]
+pub fn panicking() -> bool {
+    // TODO(steed, #36): implement panicking::panicking()
+    false
+}
+
 #[stable(feature = "rust1", since = "1.0.0")]
 pub fn spawn<F, T>(f: F) -> JoinHandle<T> where
     F: FnOnce() -> T, F: Send + 'static, T: Send + 'static
