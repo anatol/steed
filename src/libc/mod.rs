@@ -67,7 +67,7 @@ pub type mode_t = u32;
 #[cfg(issue = "22")]
 pub const EAI_SYSTEM: c_int = -11;
 
-// Rust 1.15.0
+// Rust 1.16.0
 // src/liblibc/src/unix/notbsd/linux/musl/mod.rs
 pub const PTHREAD_STACK_MIN: size_t = 2048;
 
